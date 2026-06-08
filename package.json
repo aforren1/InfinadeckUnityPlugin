@@ -1,0 +1,33 @@
+{
+  "name": "com.infinadeck.unityplugin",
+  "version": "4.0.0",
+  "displayName": "Infinadeck Unity Plugin",
+  "description": "Translates Infinadeck omnidirectional treadmill motion into 1:1 locomotion for PCVR projects. Includes locomotion, reference objects, splash screen and demo tooling. Targets Unity 6 with URP and HDRP and the Input System.",
+  "unity": "6000.0",
+  "documentationUrl": "https://github.com/Infinadeck/InfinadeckUnityPlugin",
+  "changelogUrl": "https://github.com/Infinadeck/InfinadeckUnityPlugin/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/Infinadeck/InfinadeckUnityPlugin",
+  "dependencies": {
+    "com.unity.inputsystem": "1.11.2",
+    "com.unity.ugui": "2.0.0"
+  },
+  "keywords": [
+    "vr",
+    "pcvr",
+    "treadmill",
+    "locomotion",
+    "infinadeck",
+    "omnidirectional"
+  ],
+  "author": {
+    "name": "Infinadeck",
+    "url": "https://www.infinadeck.com"
+  },
+  "samples": [
+    {
+      "displayName": "Demo Scene",
+      "description": "Example scene showing the [Infinadeck] prefab set up with reference objects and locomotion.",
+      "path": "Samples~/DemoScene"
+    }
+  ]
+}
