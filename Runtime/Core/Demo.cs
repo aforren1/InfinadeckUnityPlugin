@@ -17,7 +17,7 @@ namespace Infinadeck
         private bool counting = false;
 
         public Data preferences;
-        public Interpreter iI;
+        public Interpreter interpreter;
 
         private void Start()
         {
@@ -57,7 +57,7 @@ namespace Infinadeck
             yield return new WaitForSeconds(1.0f);
             while (true)
             {
-                if (iI.InfIntGetTreadmillRunState)
+                if (interpreter.TreadmillRunState)
                 {
                     demoTimeRemaining--;
                 }
@@ -73,7 +73,7 @@ namespace Infinadeck
             if (demoTimeRemaining <= 0)
             {
                 demoTimeRemaining = demoTime;
-                iI.InfIntStopTreadmill();
+                interpreter.StopTreadmill();
             }
 
             //Demo Time Remaining Text

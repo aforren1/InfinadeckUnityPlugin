@@ -31,15 +31,15 @@ namespace Infinadeck
         // Update is called once per frame
         void Update()
         {
-            if (!motion && !CheckForLocomotionInScene())                  // will not handle world scale or rotation
-            {                                                             // in this instance, developers using this
-                xin = (float)motion.iI.InfIntGetFloorSpeeds.v0;   // feature in this context should be
-                yin = (float)motion.iI.InfIntGetFloorSpeeds.v1;   // able to fix the problem
-            }
-            else
+            if (motion || CheckForLocomotionInScene())
             {
                 xin = motion.xDistance;
                 yin = motion.yDistance;
+            }
+            else
+            {
+                xin = 0;
+                yin = 0;
             }
             mag = Mathf.Sqrt(xin * xin + yin * yin);
             if (mag > threshold)

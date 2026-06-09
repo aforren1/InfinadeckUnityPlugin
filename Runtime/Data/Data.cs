@@ -50,12 +50,12 @@ namespace Infinadeck
          * - finds and/or creates all files
          * - runs one Read-Write cycle to get things initialized
          */
-        public void InitMe(bool FreshStart)
+        public void Initialize(bool freshStart)
         {
             Debug.Log("[Infinadeck.Data] Initializing " + fileName + " from " + fileLocation);
             path = fileLocation + fileName;
             Directory.CreateDirectory(fileLocation);
-            if (FreshStart & File.Exists(path)) { File.Delete(path); }
+            if (freshStart & File.Exists(path)) { File.Delete(path); }
             if (!File.Exists(path))
             {
                 Debug.Log("File does not exist, generating empty- Directory: " + path);

@@ -367,18 +367,6 @@ namespace Infinadeck
             return NativeMethods.GetReferenceDeviceAngleDifference();
         }
 
-        //Deprecated Functions
-        /**
-        * Start or Stop the treadmill.
-        *
-        */
-        public static void SetTreadmillRunState(bool run)
-        {
-            InitError e = InitError.None;
-            if (!CheckConnection()) InitConnection(ref e);
-            NativeMethods.SetTreadmillRunState(run);
-        }
-
         /**
         * Start the treadmill in manual control mode.
         *
@@ -436,7 +424,7 @@ namespace Infinadeck
             if (!CheckConnection()) InitConnection(ref e);
             char[] buffer = new char[128];
             NativeMethods.GetLastInitErrorDescription(buffer, 128);
-            return new string(buffer);
+            return new string(buffer).TrimEnd('\0');
         }
     }
 }

@@ -28,11 +28,11 @@ public class Core : MonoBehaviour
     [ReadOnlyInEditor] public GameObject locomotion;
     [ReadOnlyInEditor] public GameObject splashScreen;
     [ReadOnlyInEditor] public GameObject demo;
-    private ReferenceObjects infinadeckReferenceObjects;
-    private Locomotion infinadeckLocomotion;
-    private Splashscreen infinadeckSplashScreen;
-    private Demo infinaDEMO;
-    public Interpreter iI;
+    private ReferenceObjects refObjectsScript;
+    private Locomotion locomotionScript;
+    private Splashscreen splashScreenScript;
+    private Demo demoScript;
+    public Interpreter interpreter;
 
     public bool autoStart = true;
     private bool booted = false;
@@ -42,10 +42,10 @@ public class Core : MonoBehaviour
     public bool showCollisions = false;
     public bool showTreadmillVelocity = false;
     private bool initialized = false;
-    private bool localPLUGINactive = false;
-    private bool localKEYBINDSactive = false;
-    private bool localDEMOactive = false;
-    private bool localHIDEactive = false;
+    private bool pluginActive = false;
+    private bool keybindsActive = false;
+    private bool demoActive = false;
+    private bool hideActive = false;
     public string guiOutput;
 
     public Data preferences;
@@ -79,8 +79,8 @@ public class Core : MonoBehaviour
             Destroy(child.gameObject);
         }
 
-        iI = this.gameObject.AddComponent<Interpreter>();
-        iI.enabled = false;
+        interpreter = this.gameObject.AddComponent<Interpreter>();
+        interpreter.enabled = false;
 
         // Initialize Preferences
         preferences = this.gameObject.AddComponent<Data>();
@@ -158,7 +158,7 @@ public class Core : MonoBehaviour
             { "crashCheck", new Data.DataEntry { EntryName = "700 Operational", EntryValue = "false" } }
         };
         preferences.all = defaultPreferences;
-        preferences.InitMe(false); // keep any existing settings
+        preferences.Initialize(false); // keep any existing settings
 
         keybinds = this.gameObject.AddComponent<Data>();
         keybinds.fileLocation = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "/My Games/Infinadeck/Config/";
@@ -176,7 +176,7 @@ public class Core : MonoBehaviour
             { "Custom", new Data.DataEntry { EntryName = "999 Reference: Keybind Profiles", EntryValue = "karses_the_12_keys_listed_in_the_keybindProfile" } }
         };
         keybinds.all = defaultKeybinds;
-        keybinds.InitMe(false);// keep any existing settings
+        keybinds.Initialize(false);// keep any existing settings
 
 
         gamePreferences = this.gameObject.AddComponent<Data>();
@@ -192,7 +192,7 @@ public class Core : MonoBehaviour
             { "gameOverrideZ", new Data.DataEntry { EntryName = "800 General Game Preferences", EntryValue = "0.0000" } }
         };
         gamePreferences.all = defaultGamePreferences;
-        gamePreferences.InitMe(false); // keep any existing settings
+        gamePreferences.Initialize(false); // keep any existing settings
 
         textBG = Resources.Load("Textures/Inf_blackBG") as Texture2D;
 
@@ -202,7 +202,7 @@ public class Core : MonoBehaviour
         {
             Debug.Log("INFINADECK NOTICE: Prior project crashed or closed without calling OnApplicationQuit on InfinadeckCore; starting in Safe Mode. Press Ctrl+I to enable the Infinadeck Plugin.");
             preferences.Write("pluginEnabled", "false");
-            iI.enabled = false;
+            interpreter.enabled = false;
         }
 
         else
@@ -210,7 +210,7 @@ public class Core : MonoBehaviour
             preferences.Write("crashCheck", "true");
             if (autoStart) { Boot(); }
             else { Debug.Log("INFINADECK NOTICE: 'Auto Start' is disabled. Please start Infinadeck Plugin by calling the Boot() function on the instance of [Infinadeck] in your Scene."); }
-            iI.enabled = true;
+            interpreter.enabled = true;
         }
     }
 
@@ -293,44 +293,44 @@ public class Core : MonoBehaviour
             //Spawn Splashscreen
             splashScreen = Instantiate(Resources.Load("RuntimePrefabs/InfinadeckSplashscreen") as GameObject, transform.position, Quaternion.identity);
             splashScreen.transform.parent = this.transform;
-            infinadeckSplashScreen = splashScreen.GetComponent<Splashscreen>();
-            infinadeckSplashScreen.headset = headset;
-            infinadeckSplashScreen.referenceRig = this.gameObject;
-            infinadeckSplashScreen.pluginVersion.text = "Plugin Version: " + pluginVersion;
-            infinadeckSplashScreen.iI = iI;
+            splashScreenScript = splashScreen.GetComponent<Splashscreen>();
+            splashScreenScript.headset = headset;
+            splashScreenScript.referenceRig = this.gameObject;
+            splashScreenScript.pluginVersion.text = "Plugin Version: " + pluginVersion;
+            splashScreenScript.interpreter = interpreter;
         }
 
         // Spawn Reference Objects
         refObjects = Instantiate(Resources.Load("RuntimePrefabs/InfinadeckReferenceObjects") as GameObject, transform.position, Quaternion.identity);
         refObjects.transform.parent = this.transform;
-        infinadeckReferenceObjects = refObjects.GetComponent<ReferenceObjects>();
-        infinadeckReferenceObjects.referenceRig = this.gameObject;
-        infinadeckReferenceObjects.preferences = preferences;
-        infinadeckReferenceObjects.gamePreferences = gamePreferences;
-        infinadeckReferenceObjects.iI = iI;
+        refObjectsScript = refObjects.GetComponent<ReferenceObjects>();
+        refObjectsScript.referenceRig = this.gameObject;
+        refObjectsScript.preferences = preferences;
+        refObjectsScript.gamePreferences = gamePreferences;
+        refObjectsScript.interpreter = interpreter;
 
         if (movementLevel) // Only spawn the following if actually needed this level
         {
             // Spawn Locomotion
             locomotion = Instantiate(Resources.Load("RuntimePrefabs/InfinadeckLocomotion") as GameObject, transform.position, Quaternion.identity);
             locomotion.transform.parent = this.transform;
-            infinadeckLocomotion = locomotion.GetComponent<Locomotion>();
-            infinadeckLocomotion.cameraRig = cameraRig;
-            infinadeckLocomotion.referenceRig = this.gameObject;
-            infinadeckLocomotion.speedGain = speedGain;
-            infinadeckLocomotion.infinadeckReferenceObj = refObjects.GetComponent<ReferenceObjects>();
-            infinadeckLocomotion.showCollisions = showCollisions;
-            infinadeckLocomotion.showTreadmillVelocity = showTreadmillVelocity;
-            infinadeckLocomotion.iI = iI;
+            locomotionScript = locomotion.GetComponent<Locomotion>();
+            locomotionScript.cameraRig = cameraRig;
+            locomotionScript.referenceRig = this.gameObject;
+            locomotionScript.speedGain = speedGain;
+            locomotionScript.refObjects = refObjects.GetComponent<ReferenceObjects>();
+            locomotionScript.showCollisions = showCollisions;
+            locomotionScript.showTreadmillVelocity = showTreadmillVelocity;
+            locomotionScript.interpreter = interpreter;
         }
 
         // Spawn Demo
         demo = Instantiate(Resources.Load("RuntimePrefabs/InfinaDEMO") as GameObject, transform.position, Quaternion.identity);
         demo.transform.parent = this.transform;
-        infinaDEMO = demo.GetComponent<Demo>();
-        infinaDEMO.referenceRig = this.gameObject;
-        infinaDEMO.iI = iI;
-        infinaDEMO.preferences = preferences;
+        demoScript = demo.GetComponent<Demo>();
+        demoScript.referenceRig = this.gameObject;
+        demoScript.interpreter = interpreter;
+        demoScript.preferences = preferences;
     }
 
     /**
@@ -370,18 +370,18 @@ public class Core : MonoBehaviour
         }
         else if (kb != null && kb.equalsKey.wasPressedThisFrame) // Hides notifications.
         {
-            if (localHIDEactive) { preferences.Write("hideNotifications", "false"); }
+            if (hideActive) { preferences.Write("hideNotifications", "false"); }
             else { preferences.Write("hideNotifications", "true"); }
         }
 
         else
         {
-            localPLUGINactive = preferences.ReadBool("pluginEnabled");
-            localKEYBINDSactive = preferences.ReadBool("keyboardInputEnabled");
-            localDEMOactive = preferences.ReadBool("demoMode");
-            localHIDEactive = preferences.ReadBool("hideNotifications");
+            pluginActive = preferences.ReadBool("pluginEnabled");
+            keybindsActive = preferences.ReadBool("keyboardInputEnabled");
+            demoActive = preferences.ReadBool("demoMode");
+            hideActive = preferences.ReadBool("hideNotifications");
 
-            if (!localPLUGINactive)
+            if (!pluginActive)
             {
                 if (refObjects && refObjects.activeSelf) { refObjects.SetActive(false); }
                 if (locomotion && locomotion.activeSelf) { locomotion.SetActive(false); }
@@ -389,13 +389,13 @@ public class Core : MonoBehaviour
             }
             else
             {
-                iI.enabled = true;
+                interpreter.enabled = true;
                 if (refObjects && !refObjects.activeSelf) { refObjects.SetActive(true); }
                 if (locomotion && !locomotion.activeSelf) { locomotion.SetActive(true); }
                 if (demo)
                 {
-                    if (!demo.activeSelf && localDEMOactive) { demo.SetActive(true); }
-                    else if (demo.activeSelf && !localDEMOactive) { demo.SetActive(false); }
+                    if (!demo.activeSelf && demoActive) { demo.SetActive(true); }
+                    else if (demo.activeSelf && !demoActive) { demo.SetActive(false); }
                 }
                 
                 if (kb != null && kb.anyKey.wasPressedThisFrame)
@@ -408,7 +408,7 @@ public class Core : MonoBehaviour
 
     public void InputCheck()
     {
-        if (CheckFuncByKeybind("ReloadCurrentLevel", "901- Treadmill", "LeftShift"))
+        if (IsActionPressed("ReloadCurrentLevel", "901- Treadmill", "LeftShift"))
         {
             if (guaranteeDestroyOnLoad) {
                 preferences.Write("crashCheck", "false");
@@ -416,107 +416,107 @@ public class Core : MonoBehaviour
             }  
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
-        if (CheckFuncByKeybind("StopTreadmill", "901- Treadmill", "Space"))
+        if (IsActionPressed("StopTreadmill", "901- Treadmill", "Space"))
         {
-            iI.InfIntStopTreadmill();
+            interpreter.StopTreadmill();
         }
-        if (CheckFuncByKeybind("StartTreadmill", "901- Treadmill", "RightShift"))
+        if (IsActionPressed("StartTreadmill", "901- Treadmill", "RightShift"))
         {
-            iI.InfIntStartTreadmillUserControl();
+            interpreter.StartTreadmillUserControl();
         }
-        if (CheckFuncByKeybind("ImportPreferences", "901- Treadmill", "Backslash"))
+        if (IsActionPressed("ImportPreferences", "901- Treadmill", "Backslash"))
         {
             ImportPreferences();
         }
-        if (CheckFuncByKeybind("ResetPreferences", "901- Treadmill", "Backspace"))
+        if (IsActionPressed("ResetPreferences", "901- Treadmill", "Backspace"))
         {
             ResetPreferences();
         }
 
-        if (CheckFuncByKeybind("ToggleDeckRing", "902- Reference Objects", "Q"))
+        if (IsActionPressed("ToggleDeckRing", "902- Reference Objects", "Q"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleDeckRing();
+            if (refObjectsScript) refObjectsScript.ToggleDeckRing();
         }
-        if (CheckFuncByKeybind("ToggleDeckEdge", "902- Reference Objects", "W"))
+        if (IsActionPressed("ToggleDeckEdge", "902- Reference Objects", "W"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleDeckEdge();
+            if (refObjectsScript) refObjectsScript.ToggleDeckEdge();
         }
-        if (CheckFuncByKeybind("ToggleDeckCenter", "902- Reference Objects", "E"))
+        if (IsActionPressed("ToggleDeckCenter", "902- Reference Objects", "E"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleDeckCenter();
+            if (refObjectsScript) refObjectsScript.ToggleDeckCenter();
         }
-        if (CheckFuncByKeybind("ToggleReferencePanel", "902- Reference Objects", "R"))
+        if (IsActionPressed("ToggleReferencePanel", "902- Reference Objects", "R"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleReferencePanel();
+            if (refObjectsScript) refObjectsScript.ToggleReferencePanel();
         }
-        if (CheckFuncByKeybind("ToggleInEngineDeck", "902- Reference Objects", "T"))
+        if (IsActionPressed("ToggleInEngineDeck", "902- Reference Objects", "T"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleInEngineDeck();
+            if (refObjectsScript) refObjectsScript.ToggleInEngineDeck();
         }
-        if (CheckFuncByKeybind("ToggleHeading", "902- Reference Objects", "Y"))
+        if (IsActionPressed("ToggleHeading", "902- Reference Objects", "Y"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleHeading();
+            if (refObjectsScript) refObjectsScript.ToggleHeading();
         }
-        if (CheckFuncByKeybind("ToggleColorblind", "902- Reference Objects", "U"))
+        if (IsActionPressed("ToggleColorblind", "902- Reference Objects", "U"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.ToggleColorblind();
+            if (refObjectsScript) refObjectsScript.ToggleColorblind();
         }
-        if (CheckFuncByKeybind("CyclePanelTheme", "902- Reference Objects", "I"))
+        if (IsActionPressed("CyclePanelTheme", "902- Reference Objects", "I"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.CyclePanelTheme();
+            if (refObjectsScript) refObjectsScript.CyclePanelTheme();
         }
-        if (CheckFuncByKeybind("CycleDeckCenter", "902- Reference Objects", "O"))
+        if (IsActionPressed("CycleDeckCenter", "902- Reference Objects", "O"))
         {
-            if (infinadeckReferenceObjects) infinadeckReferenceObjects.CycleDeckCenter();
+            if (refObjectsScript) refObjectsScript.CycleDeckCenter();
         }
 
-        if (CheckFuncByKeybind("SetTimer1Minute", "903- Demo", "Digit1"))
+        if (IsActionPressed("SetTimer1Minute", "903- Demo", "Digit1"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(60);
+            if (demoScript) demoScript.SetTheTimer(60);
         }
-        if (CheckFuncByKeybind("SetTimer2Minute", "903- Demo", "Digit2"))
+        if (IsActionPressed("SetTimer2Minute", "903- Demo", "Digit2"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(120);
+            if (demoScript) demoScript.SetTheTimer(120);
         }
-        if (CheckFuncByKeybind("SetTimer3Minute", "903- Demo", "Digit3"))
+        if (IsActionPressed("SetTimer3Minute", "903- Demo", "Digit3"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(180);
+            if (demoScript) demoScript.SetTheTimer(180);
         }
-        if (CheckFuncByKeybind("SetTimer4Minute", "903- Demo", "Digit4"))
+        if (IsActionPressed("SetTimer4Minute", "903- Demo", "Digit4"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(240);
+            if (demoScript) demoScript.SetTheTimer(240);
         }
-        if (CheckFuncByKeybind("SetTimer5Minute", "903- Demo", "Digit5"))
+        if (IsActionPressed("SetTimer5Minute", "903- Demo", "Digit5"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(300);
+            if (demoScript) demoScript.SetTheTimer(300);
         }
-        if (CheckFuncByKeybind("SetTimer6Minute", "903- Demo", "Digit6"))
+        if (IsActionPressed("SetTimer6Minute", "903- Demo", "Digit6"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(360);
+            if (demoScript) demoScript.SetTheTimer(360);
         }
-        if (CheckFuncByKeybind("SetTimer7Minute", "903- Demo", "Digit7"))
+        if (IsActionPressed("SetTimer7Minute", "903- Demo", "Digit7"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(420);
+            if (demoScript) demoScript.SetTheTimer(420);
         }
-        if (CheckFuncByKeybind("SetTimer8Minute", "903- Demo", "Digit8"))
+        if (IsActionPressed("SetTimer8Minute", "903- Demo", "Digit8"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(480);
+            if (demoScript) demoScript.SetTheTimer(480);
         }
-        if (CheckFuncByKeybind("SetTimer9Minute", "903- Demo", "Digit9"))
+        if (IsActionPressed("SetTimer9Minute", "903- Demo", "Digit9"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(540);
+            if (demoScript) demoScript.SetTheTimer(540);
         }
-        if (CheckFuncByKeybind("SetTimer10Minute", "903- Demo", "Digit0"))
+        if (IsActionPressed("SetTimer10Minute", "903- Demo", "Digit0"))
         {
-            if (infinaDEMO) infinaDEMO.SetTheTimer(600);
+            if (demoScript) demoScript.SetTheTimer(600);
         }
-        if (CheckFuncByKeybind("ToggleDemoMode", "903- Demo", "Minus"))
+        if (IsActionPressed("ToggleDemoMode", "903- Demo", "Minus"))
         {
-            if (infinaDEMO) infinaDEMO.ToggleDemoMode();
+            if (demoScript) demoScript.ToggleDemoMode();
         }
     }
 
-    public bool CheckFuncByKeybind(string funcName, string funcGroup, string defaultKey)
+    public bool IsActionPressed(string funcName, string funcGroup, string defaultKey)
     {
         if (!keybinds.all.ContainsKey(funcName)) // if the function is not one we are already watching for:
         {
@@ -526,7 +526,7 @@ public class Core : MonoBehaviour
             keybinds.LoadSettings();
         }
         if (Keyboard.current == null) return false;
-        Key key = StringToKey(keybinds.ReadString(funcName));
+        Key key = ParseKey(keybinds.ReadString(funcName));
         if (key == Key.None) return false;
         return Keyboard.current[key].wasPressedThisFrame;
     }
@@ -537,7 +537,7 @@ public class Core : MonoBehaviour
     /// legacy UnityEngine.KeyCode names (e.g. "Alpha1", "Keypad1", "Return", "BackQuote")
     /// for backward compatibility with older config files.
     /// </summary>
-    public Key StringToKey(string keyName)
+    public Key ParseKey(string keyName)
     {
         if (string.IsNullOrEmpty(keyName)) return Key.None;
         if (Enum.TryParse(keyName, true, out Key key)) return key;
@@ -628,13 +628,13 @@ public class Core : MonoBehaviour
      */
     void OnGUI()
     {
-        if (!localHIDEactive)
+        if (!hideActive)
         {
-            if (iI.Connected)
+            if (interpreter.Connected)
             {
-                if (localPLUGINactive) // IDA present, Plugin is Enabled
+                if (pluginActive) // IDA present, Plugin is Enabled
                 {
-                    if (localKEYBINDSactive)
+                    if (keybindsActive)
                     {
                         string keybindTREADString = "";
                         string keybindREFOBJString = "";
@@ -645,7 +645,7 @@ public class Core : MonoBehaviour
                             else if (pref.Value.EntryName == "902- Reference Objects") { keybindREFOBJString += pref.Value.EntryValue + " to " + pref.Key + "\n"; }
                             else if (pref.Value.EntryName == "903- Demo") { keybindDEMOString += pref.Value.EntryValue + " to " + pref.Key + "\n"; }
                         }
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                             + "Escape to QuitGame, Ctrl+I to TogglePlugin, = to HideGUI\n"
                             + "\n[Treadmill]\n"
                             + keybindTREADString
@@ -662,7 +662,7 @@ public class Core : MonoBehaviour
                     }
                     else
                     {
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                             + "No keybinds active\n"
                             + "\n"
                             + "Enable them by setting 'keyboardInputEnabled = true in'\n"
@@ -679,7 +679,7 @@ public class Core : MonoBehaviour
                 }
                 else// IDA present, Plugin is Disabled
                 {
-                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                         + "Infinadeck Plugin disabled, but IDA is open\n"
                         + "\n"
                         + "Re-enable by pressing Ctrl+I\n"
@@ -696,9 +696,9 @@ public class Core : MonoBehaviour
             }
             else
             {
-                if (localPLUGINactive) // IDA not present, Plugin is Enabled
+                if (pluginActive) // IDA not present, Plugin is Enabled
                 {
-                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                         + "Infinadeck Plugin enabled, but IDA is not open\n"
                         + "\n"
                         + "Download IDA (Infinadeck Desktop Application)\n"
@@ -714,10 +714,10 @@ public class Core : MonoBehaviour
                 }
                 else // IDA not present, Plugin is Disabled
                 {
-                    if (iI.enabled) { guiOutput = ""; }
+                    if (interpreter.enabled) { guiOutput = ""; }
                     else //Safe Mode Message
                     {
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                         + "SAFE MODE\n"
                         + "\n"
                         + "Prior project crashed or closed without\n"
@@ -736,10 +736,10 @@ public class Core : MonoBehaviour
         }
         else
         {
-            if (iI.enabled) { guiOutput = ""; }
+            if (interpreter.enabled) { guiOutput = ""; }
             else //Safe Mode Message even though messages hidden
             {
-                guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + iI.errorInfo + "</color>\n"
+                guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
                 + "SAFE MODE\n"
                 + "\n"
                 + "Prior project crashed or closed without\n"

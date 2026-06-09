@@ -42,7 +42,7 @@ public class ReferenceObjects : MonoBehaviour
     public Data gamePreferences;
     private bool geoUpdating;
     private bool modelUpdating;
-    public Interpreter iI;
+    public Interpreter interpreter;
     /**
      * Runs once on the object's first frame.
      */
@@ -70,16 +70,9 @@ public class ReferenceObjects : MonoBehaviour
 
     void OnDisable()
     {
-        if (geoUpdating)
-        {
-            StopCoroutine(UpdateObjectGeometry());
-            geoUpdating = false;
-        }
-        if (modelUpdating)
-        {
-            StopCoroutine(UpdateObjectModels());
-            modelUpdating = false;
-        }
+        StopAllCoroutines();
+        geoUpdating = false;
+        modelUpdating = false;
     }
 
     /**
@@ -89,7 +82,7 @@ public class ReferenceObjects : MonoBehaviour
     {
         frameCount++;
         if (frameCount >= preferences.ReadInt("dynamicColorblindFrames")) { frameCount = 0; }
-        if (iI.InfIntGetTreadmillRunState)
+        if (interpreter.TreadmillRunState)
         {
             SyncColor(Color.green);
             if (preferences.ReadBool("colorblindMode"))
@@ -167,7 +160,7 @@ public class ReferenceObjects : MonoBehaviour
         modelUpdating = true;
         while (true)
         {
-            if (!preferences) yield return new WaitForSeconds(0.05f);
+            if (!preferences) { yield return new WaitForSeconds(0.05f); continue; }
             if (!geoUpdating)
             {
                 StartCoroutine(UpdateObjectGeometry());
@@ -205,7 +198,7 @@ public class ReferenceObjects : MonoBehaviour
     IEnumerator UpdateObjectGeometry() {
         geoUpdating = true;
         while (true) {
-            if (!preferences) yield return new WaitForSeconds(0.05f);
+            if (!preferences) { yield return new WaitForSeconds(0.05f); continue; }
             Vector3 ringposition = Vector3.zero;
             if (preferences.ReadBool("overrideTreadmillPosition"))
             {
@@ -215,7 +208,7 @@ public class ReferenceObjects : MonoBehaviour
             }
             else
             {
-                ringposition = new Vector3((float)iI.InfIntGetRingValues.x, (float)iI.InfIntGetRingValues.z, (float)iI.InfIntGetRingValues.y);
+                ringposition = new Vector3((float)interpreter.RingValues.x, (float)interpreter.RingValues.z, (float)interpreter.RingValues.y);
                 this.transform.localPosition = new Vector3(ringposition.x, 0, ringposition.z); // 0 out vertical axis
                 referenceRing.transform.localPosition = new Vector3(0, ringposition.y, 0); // use ONLY vertical axis
                 referencePanel.transform.localPosition = new Vector3(0, ringposition.y, 0); // use ONLY vertical axis

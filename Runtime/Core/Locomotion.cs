@@ -23,12 +23,12 @@ namespace Infinadeck
         private float calcX;
         private float calcY;
         public float speedGain = 1;
-        public ReferenceObjects infinadeckReferenceObj;
+        public ReferenceObjects refObjects;
         public bool showCollisions = false;
         private Vector3 targetPosition = Vector3.zero;
         private Vector3 previousFramePosition = Vector3.zero;
         public bool showTreadmillVelocity = false;
-        public Interpreter iI;
+        public Interpreter interpreter;
 
         public bool testShake = false;
         public float testShakeStrength = .005f;
@@ -60,7 +60,7 @@ namespace Infinadeck
          */
         void Update()
         {
-            if (iI.Connected) // only run if there is a successful connection
+            if (interpreter.Connected) // only run if there is a successful connection
             {
                 if (!referenceRig) { return; }
                 if (!cameraRig) { return; }
@@ -72,11 +72,11 @@ namespace Infinadeck
 
                 // Import speeds from Infinadeck
 
-                if (showTreadmillVelocity) { Debug.Log(iI.InfIntGetFloorSpeeds.v0 + " " + iI.InfIntGetFloorSpeeds.v1); }
+                if (showTreadmillVelocity) { Debug.Log(interpreter.FloorSpeeds.v0 + " " + interpreter.FloorSpeeds.v1); }
 
                 // Distance = speed * time between samples
-                calcX = (float)iI.InfIntGetFloorSpeeds.v0 * (Time.deltaTime);
-                calcY = (float)iI.InfIntGetFloorSpeeds.v1 * (Time.deltaTime);
+                calcX = (float)interpreter.FloorSpeeds.v0 * (Time.deltaTime);
+                calcY = (float)interpreter.FloorSpeeds.v1 * (Time.deltaTime);
                 // Convert for any weird world rotation or scale
                 fixAngle = this.transform.eulerAngles.y * Mathf.Deg2Rad;
                 xDistance = (calcX * Mathf.Cos(fixAngle) + calcY * Mathf.Sin(fixAngle)) * referenceRig.transform.lossyScale.x * speedGain;
@@ -96,7 +96,7 @@ namespace Infinadeck
 
                 previousFramePosition = cameraRig.transform.position;
 
-                if (infinadeckReferenceObj) { infinadeckReferenceObj.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)iI.InfIntGetFloorSpeeds.v0, (float)iI.InfIntGetFloorSpeeds.v1, 0)); }
+                if (refObjects) { refObjects.currentTreadmillSpeed = Vector3.Magnitude(new Vector3((float)interpreter.FloorSpeeds.v0, (float)interpreter.FloorSpeeds.v1, 0)); }
             }
         }
     }

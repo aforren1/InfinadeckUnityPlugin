@@ -7,22 +7,22 @@ namespace Infinadeck
     {
         public float SlowLoopWaitTime = 0.5f;
         public bool Connected { get; private set; }
-        public SpeedVector2 InfIntGetFloorSpeeds { get; private set; }
-        public double InfIntGetFloorSpeedMagnitude { get; private set; }
-        public double InfIntGetFloorSpeedAngle { get; private set; }
-        public bool InfIntGetTreadmillRunState { get; private set; }
-        public Ring InfIntGetRingValues { get; private set; }
-        public bool InfIntGetTreadmillPauseState { get; private set; }
-        public bool InfIntGetVirtualRingEnabled { get; private set; }
-        public QuaternionVector4 InfIntGetReferenceDeviceAngleDifference { get; private set; }
+        public SpeedVector2 FloorSpeeds { get; private set; }
+        public double FloorSpeedMagnitude { get; private set; }
+        public double FloorSpeedAngle { get; private set; }
+        public bool TreadmillRunState { get; private set; }
+        public Ring RingValues { get; private set; }
+        public bool TreadmillPauseState { get; private set; }
+        public bool VirtualRingEnabled { get; private set; }
+        public QuaternionVector4 ReferenceDeviceAngleDifference { get; private set; }
 
-        public string InfIntGetTreadmillInfoID { get; private set; }
-        public string InfIntGetTreadmillInfoModel_Number { get; private set; }
-        public string InfIntGetTreadmillInfoDLL_Version { get; private set; }
+        public string TreadmillInfoID { get; private set; }
+        public string TreadmillInfoModelNumber { get; private set; }
+        public string TreadmillInfoDllVersion { get; private set; }
 
         private bool running;
 
-        private int loopdelay = 0;
+        private int loopDelay = 0;
 
         private Coroutine slowCo = null;
 
@@ -101,53 +101,53 @@ namespace Infinadeck
 
         private void StandardLoop() //Low frequency information, delay allowed
         {
-            switch (loopdelay)
+            switch (loopDelay)
             {
-                case 0: InfIntGetFloorSpeedMagnitude = Sdk.GetFloorSpeedMagnitude(); break;
-                case 1: InfIntGetFloorSpeedAngle = Sdk.GetFloorSpeedAngle(); break;
-                case 2: InfIntGetRingValues = Sdk.GetRingValues(); break;
-                case 3: InfIntGetTreadmillPauseState = Sdk.GetTreadmillPauseState(); break;
-                case 4: InfIntGetVirtualRingEnabled = Sdk.GetVirtualRingEnabled(); break;
-                case 5: InfIntGetReferenceDeviceAngleDifference = Sdk.GetReferenceDeviceAngleDifference(); break;
-                case 6: InfIntGetTreadmillInfoID = Sdk.GetTreadmillInfo().id; break;
-                case 7: InfIntGetTreadmillInfoModel_Number = Sdk.GetTreadmillInfo().model_number; break;
-                case 8: InfIntGetTreadmillInfoDLL_Version = Sdk.GetTreadmillInfo().dll_version; break;
-                default: loopdelay = -1; break;
+                case 0: FloorSpeedMagnitude = Sdk.GetFloorSpeedMagnitude(); break;
+                case 1: FloorSpeedAngle = Sdk.GetFloorSpeedAngle(); break;
+                case 2: RingValues = Sdk.GetRingValues(); break;
+                case 3: TreadmillPauseState = Sdk.GetTreadmillPauseState(); break;
+                case 4: VirtualRingEnabled = Sdk.GetVirtualRingEnabled(); break;
+                case 5: ReferenceDeviceAngleDifference = Sdk.GetReferenceDeviceAngleDifference(); break;
+                case 6: TreadmillInfoID = Sdk.GetTreadmillInfo().id; break;
+                case 7: TreadmillInfoModelNumber = Sdk.GetTreadmillInfo().model_number; break;
+                case 8: TreadmillInfoDllVersion = Sdk.GetTreadmillInfo().dll_version; break;
+                default: loopDelay = -1; break;
             }
-            loopdelay++;
+            loopDelay++;
         }
 
         private void FastLoop() //High frequency information, cheap to run, no delay allowed
         {
-            InfIntGetFloorSpeeds = Sdk.GetFloorSpeeds();
-            InfIntGetTreadmillRunState = Sdk.GetTreadmillRunState();
+            FloorSpeeds = Sdk.GetFloorSpeeds();
+            TreadmillRunState = Sdk.GetTreadmillRunState();
         }
 
-        public void InfIntSetManualSpeeds(double x, double y)
+        public void SetManualSpeeds(double x, double y)
         {
             if (Connected) { Sdk.SetManualSpeeds(x, y); }
         }
-        public void InfIntRequestTreadmillRunState(bool run)
+        public void RequestTreadmillRunState(bool run)
         {
             if (Connected) { Sdk.RequestTreadmillRunState(run); }
         }
-        public void InfIntSetTreadmillPause(bool pause)
+        public void SetTreadmillPause(bool pause)
         {
             if (Connected) { Sdk.SetTreadmillPause(pause); }
         }
-        public void InfIntSetVirtualRing(bool pause)
+        public void SetVirtualRing(bool enable)
         {
-            if (Connected) { Sdk.SetTreadmillPause(pause); }
+            if (Connected) { Sdk.SetVirtualRing(enable); }
         }
-        public void InfIntStopTreadmill()
+        public void StopTreadmill()
         {
             if (Connected) { Sdk.StopTreadmill(); }
         }
-        public void InfIntStartTreadmillManualControl()
+        public void StartTreadmillManualControl()
         {
             if (Connected) { Sdk.StartTreadmillManualControl(); }
         }
-        public void InfIntStartTreadmillUserControl()
+        public void StartTreadmillUserControl()
         {
             if (Connected) { Sdk.StartTreadmillUserControl(); }
         }

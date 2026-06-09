@@ -14,7 +14,7 @@ namespace Infinadeck
 {
     public class Splashscreen : MonoBehaviour
     {
-        public Interpreter iI;
+        public Interpreter interpreter;
         public Text deckSN;
         public Text modelNumber;
         public Text APIVersion;
@@ -51,9 +51,9 @@ namespace Infinadeck
         private void Update()
         {
             // update the splashscreen with relevant info, pull from deck itself
-            if (iI.InfIntGetTreadmillInfoID != null) { deckSN.text = "Deck SN: " + iI.InfIntGetTreadmillInfoID; }
-            if (iI.InfIntGetTreadmillInfoModel_Number != null) { modelNumber.text = "Model Number: " + iI.InfIntGetTreadmillInfoModel_Number; }
-            if (iI.InfIntGetTreadmillInfoDLL_Version != null) { APIVersion.text = "API Version: " + iI.InfIntGetTreadmillInfoDLL_Version; }
+            if (interpreter.TreadmillInfoID != null) { deckSN.text = "Deck SN: " + interpreter.TreadmillInfoID; }
+            if (interpreter.TreadmillInfoModelNumber != null) { modelNumber.text = "Model Number: " + interpreter.TreadmillInfoModelNumber; }
+            if (interpreter.TreadmillInfoDllVersion != null) { APIVersion.text = "API Version: " + interpreter.TreadmillInfoDllVersion; }
         }
     }
 }

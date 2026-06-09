@@ -49,7 +49,7 @@ MonoBehaviour:
   locomotion: {fileID: 0}
   splashScreen: {fileID: 0}
   demo: {fileID: 0}
-  iI: {fileID: 0}
+  interpreter: {fileID: 0}
   autoStart: 1
   firstLevel: 1
   movementLevel: 1

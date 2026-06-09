@@ -23,7 +23,7 @@ namespace Infinadeck
 
         [ReadOnlyInEditor] public float xDistance;
         [ReadOnlyInEditor] public float yDistance;
-        public Interpreter iI;
+        public Interpreter interpreter;
 
         /**
          * Runs once per frame update.
@@ -31,7 +31,7 @@ namespace Infinadeck
         void Update()
         {
             if (!motion) { motion = FindFirstObjectByType<Locomotion>(); }
-            else if (!iI) { iI = FindFirstObjectByType<Interpreter>(); }
+            else if (!interpreter) { interpreter = FindFirstObjectByType<Interpreter>(); }
             else
             {
                 if (anchor) // only run if there is a successful connection
@@ -48,8 +48,8 @@ namespace Infinadeck
                     }
                     else if (motion)
                     {
-                        xDistance += (float)iI.InfIntGetFloorSpeeds.v0 * (Time.deltaTime);
-                        yDistance += (float)iI.InfIntGetFloorSpeeds.v1 * (Time.deltaTime);
+                        xDistance += (float)interpreter.FloorSpeeds.v0 * (Time.deltaTime);
+                        yDistance += (float)interpreter.FloorSpeeds.v1 * (Time.deltaTime);
                     }
 
                     mat.SetTextureOffset("_MainTex", new Vector2(-xDistance / speedToDeckSurface, -yDistance / speedToDeckSurface));

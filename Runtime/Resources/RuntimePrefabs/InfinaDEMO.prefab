@@ -55,7 +55,7 @@ MonoBehaviour:
   demoTimeRemaining: 120
   demoTime: 120
   preferences: {fileID: 0}
-  iI: {fileID: 0}
+  interpreter: {fileID: 0}
 --- !u!1 &352920676526279132
 GameObject:
   m_ObjectHideFlags: 0

@@ -154,7 +154,11 @@ namespace Infinadeck
                 }
                 for (int b = 0; b < 12; b++)
                 {
-                    customKeys[b] = (Key)System.Enum.Parse(typeof(Key), keyArray[b]);
+                    if (!Enum.TryParse(keyArray[b], true, out customKeys[b]))
+                    {
+                        Debug.LogError("INFINAKEYBIND: invalid key name '" + keyArray[b] + "' in custom profile; using Key.None");
+                        customKeys[b] = Key.None;
+                    }
                 }
                 return customKeys;
             }
