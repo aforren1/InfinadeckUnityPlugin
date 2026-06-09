@@ -109,9 +109,12 @@ namespace Infinadeck
                 case 3: TreadmillPauseState = Sdk.GetTreadmillPauseState(); break;
                 case 4: VirtualRingEnabled = Sdk.GetVirtualRingEnabled(); break;
                 case 5: ReferenceDeviceAngleDifference = Sdk.GetReferenceDeviceAngleDifference(); break;
-                case 6: TreadmillInfoID = Sdk.GetTreadmillInfo().id; break;
-                case 7: TreadmillInfoModelNumber = Sdk.GetTreadmillInfo().model_number; break;
-                case 8: TreadmillInfoDllVersion = Sdk.GetTreadmillInfo().dll_version; break;
+                case 6:
+                    TreadmillInfo tInfo = Sdk.GetTreadmillInfo();
+                    TreadmillInfoID = tInfo.id;
+                    TreadmillInfoModelNumber = tInfo.model_number;
+                    TreadmillInfoDllVersion = tInfo.dll_version;
+                    break;
                 default: loopDelay = -1; break;
             }
             loopDelay++;

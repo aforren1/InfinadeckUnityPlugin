@@ -47,6 +47,9 @@ public class Core : MonoBehaviour
     private bool demoActive = false;
     private bool hideActive = false;
     public string guiOutput;
+    private DateTime _keybindsSyncedAt;
+    private string _keybindsErrorInfo = "";
+    private string _keybindsSectionStr = "";
 
     public Data preferences;
     public Dictionary<string, Data.DataEntry> defaultPreferences;
@@ -636,27 +639,30 @@ public class Core : MonoBehaviour
                 {
                     if (keybindsActive)
                     {
-                        string keybindTREADString = "";
-                        string keybindREFOBJString = "";
-                        string keybindDEMOString = "";
-                        foreach (KeyValuePair<string, Data.DataEntry> pref in keybinds.all)
+                        if (keybinds.lastSync != _keybindsSyncedAt)
                         {
-                            if (pref.Value.EntryName == "901- Treadmill") { keybindTREADString += pref.Value.EntryValue + " to " + pref.Key + "\n"; }
-                            else if (pref.Value.EntryName == "902- Reference Objects") { keybindREFOBJString += pref.Value.EntryValue + " to " + pref.Key + "\n"; }
-                            else if (pref.Value.EntryName == "903- Demo") { keybindDEMOString += pref.Value.EntryValue + " to " + pref.Key + "\n"; }
+                            _keybindsSyncedAt = keybinds.lastSync;
+                            string tread = "", refobj = "", demo = "";
+                            foreach (KeyValuePair<string, Data.DataEntry> pref in keybinds.all)
+                            {
+                                if (pref.Value.EntryName == "901- Treadmill") tread += pref.Value.EntryValue + " to " + pref.Key + "\n";
+                                else if (pref.Value.EntryName == "902- Reference Objects") refobj += pref.Value.EntryValue + " to " + pref.Key + "\n";
+                                else if (pref.Value.EntryName == "903- Demo") demo += pref.Value.EntryValue + " to " + pref.Key + "\n";
+                            }
+                            _keybindsSectionStr = "Escape to QuitGame, Ctrl+I to TogglePlugin, = to HideGUI\n"
+                                + "\n[Treadmill]\n" + tread
+                                + "\n[Reference Objects]\n" + refobj
+                                + "\n[Demo]\n" + demo
+                                + "\n\nAll keybinds listed in\n"
+                                + "My Documents/My Games/Infinadeck/Config/keybinds.ini\n"
+                                + "\nContact us at <b>support@infinadeck.com</b> for more assistance\n";
+                            _keybindsErrorInfo = "";
                         }
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
-                            + "Escape to QuitGame, Ctrl+I to TogglePlugin, = to HideGUI\n"
-                            + "\n[Treadmill]\n"
-                            + keybindTREADString
-                            + "\n[Reference Objects]\n"
-                            + keybindREFOBJString
-                            + "\n[Demo]\n"
-                            + keybindDEMOString
-                            + "\n\nAll keybinds listed in\n"
-                            + "My Documents/My Games/Infinadeck/Config/keybinds.ini\n"
-                            + "\n"
-                            + "Contact us at <b>support@infinadeck.com</b> for more assistance\n";
+                        if (interpreter.errorInfo != _keybindsErrorInfo)
+                        {
+                            _keybindsErrorInfo = interpreter.errorInfo;
+                            guiOutput = "<b>INFINADECK</b>   <color=red>" + _keybindsErrorInfo + "</color>\n" + _keybindsSectionStr;
+                        }
                         GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 700, 400, 1200), textBG, ScaleMode.StretchToFill, false, 0);
                         GUI.Label(new Rect(Screen.width - 685, Screen.height - 685, 400, 1200), guiOutput);
                     }

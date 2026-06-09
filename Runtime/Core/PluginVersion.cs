@@ -17,12 +17,20 @@ namespace Infinadeck
     {
         public Text version;
         private Core core;
+        private double nextSearch;
 
-        // Update is called once per frame
         void Update()
         {
-            if (!core) { core = FindFirstObjectByType<Core>(); }
-            else { version.text = core.pluginVersionForEditorReference; }
+            if (!core)
+            {
+                if (Time.realtimeSinceStartup < nextSearch) return;
+                nextSearch = Time.realtimeSinceStartup + 1.0;
+                core = FindFirstObjectByType<Core>();
+            }
+            else
+            {
+                version.text = core.pluginVersionForEditorReference;
+            }
         }
     }
 }

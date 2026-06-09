@@ -43,6 +43,17 @@ public class ReferenceObjects : MonoBehaviour
     private bool geoUpdating;
     private bool modelUpdating;
     public Interpreter interpreter;
+
+    // Cached preference values — refreshed every 0.1 s by UpdateObjectModels so Update() is free of dict lookups and TryParse calls
+    private bool prefColorblind;
+    private bool prefDynamicColorblind;
+    private int prefColorblindFrames = 2000;
+    private bool prefDynamicRingPanel;
+    private float prefMaxSpeed;
+    private float prefBandThickness;
+    private bool prefDynamicBackdrop;
+    private int prefPanelPalette;
+
     /**
      * Runs once on the object's first frame.
      */
@@ -81,41 +92,41 @@ public class ReferenceObjects : MonoBehaviour
     void Update()
     {
         frameCount++;
-        if (frameCount >= preferences.ReadInt("dynamicColorblindFrames")) { frameCount = 0; }
+        if (frameCount >= prefColorblindFrames) { frameCount = 0; }
         if (interpreter.TreadmillRunState)
         {
             SyncColor(Color.green);
-            if (preferences.ReadBool("colorblindMode"))
+            if (prefColorblind)
             {
                 referencePanelSymbolMat.SetTexture("_CutTex", symbolGo);
-                if (preferences.ReadBool("dynamicColorblindElements"))
+                if (prefDynamicColorblind)
                 {
-                    referencePanelSymbolMat.SetTextureOffset("_CutTex", new Vector2(0, (float) frameCount / preferences.ReadInt("dynamicColorblindFrames")));
+                    referencePanelSymbolMat.SetTextureOffset("_CutTex", new Vector2(0, (float)frameCount / prefColorblindFrames));
                 }
             }
         }
         else
         {
             SyncColor(Color.red);
-            if (preferences.ReadBool("colorblindMode"))
+            if (prefColorblind)
             {
                 referencePanelSymbolMat.SetTexture("_CutTex", symbolStop);
-                if (preferences.ReadBool("dynamicColorblindElements"))
+                if (prefDynamicColorblind)
                 {
-                    referencePanelSymbolMat.SetTextureOffset("_CutTex", new Vector2((float) frameCount / preferences.ReadInt("dynamicColorblindFrames"), 0));
+                    referencePanelSymbolMat.SetTextureOffset("_CutTex", new Vector2((float)frameCount / prefColorblindFrames, 0));
                 }
             }
         }
 
-        if ((preferences.ReadBool("dynamicRingPanel")) && (preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond") != 0))
+        if (prefDynamicRingPanel && prefMaxSpeed != 0)
         {
-            float ratio = currentTreadmillSpeed / preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond");
+            float ratio = currentTreadmillSpeed / prefMaxSpeed;
             if (ratio > 1) ratio = 1;
             if (ratio < 0) ratio = 0;
 
-            if (preferences.ReadFloat("bandThicknessPercent") != 0)
+            if (prefBandThickness != 0)
             {
-                float bt = preferences.ReadFloat("bandThicknessPercent");
+                float bt = prefBandThickness;
                 if (bt > 100) bt = 100;
                 if (bt < 0.1f) bt = 0.1f;
                 float workingRange = 100 - bt;
@@ -125,18 +136,18 @@ public class ReferenceObjects : MonoBehaviour
                 referencePanelBand.SetBlendShapeWeight(1, bottomMult); //Bottom
             }
 
-            if (preferences.ReadBool("dynamicBackdrop")) { referencePanelBackdrop.SetBlendShapeWeight(0, 100 * (1 - ratio)); } //Top
+            if (prefDynamicBackdrop) { referencePanelBackdrop.SetBlendShapeWeight(0, 100 * (1 - ratio)); } //Top
             else { referencePanelBackdrop.SetBlendShapeWeight(0, 0); } //Top
 
-            if (preferences.ReadInt("panelPalette") == 1) // [1] grey-BG white-boundary synced-band
+            if (prefPanelPalette == 1)
             {
                 referencePanelBandMat.SetColor("_Color2", grad.Evaluate(ratio));
             }
-            else if (preferences.ReadInt("panelPalette") == 2) // [2] synced-BG white-boundary white-band
+            else if (prefPanelPalette == 2)
             {
                 referencePanelBackdropMat.SetColor("_Color2", grad.Evaluate(ratio));
             }
-            else if (preferences.ReadInt("panelPalette") == 3) // [3] no-BG white-boundary synced-band
+            else if (prefPanelPalette == 3)
             {
                 referencePanelBandMat.SetColor("_Color2", grad.Evaluate(ratio));
             }
@@ -161,6 +172,14 @@ public class ReferenceObjects : MonoBehaviour
         while (true)
         {
             if (!preferences) { yield return new WaitForSeconds(0.05f); continue; }
+            prefColorblind = preferences.ReadBool("colorblindMode");
+            prefDynamicColorblind = preferences.ReadBool("dynamicColorblindElements");
+            prefColorblindFrames = preferences.ReadInt("dynamicColorblindFrames");
+            prefDynamicRingPanel = preferences.ReadBool("dynamicRingPanel");
+            prefMaxSpeed = preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond");
+            prefBandThickness = preferences.ReadFloat("bandThicknessPercent");
+            prefDynamicBackdrop = preferences.ReadBool("dynamicBackdrop");
+            prefPanelPalette = preferences.ReadInt("panelPalette");
             if (!geoUpdating)
             {
                 StartCoroutine(UpdateObjectGeometry());
