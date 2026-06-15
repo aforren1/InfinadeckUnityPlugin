@@ -656,7 +656,7 @@ public class Core : MonoBehaviour
                                 + "\n\nAll keybinds listed in\n"
                                 + "My Documents/My Games/Infinadeck/Config/keybinds.ini\n"
                                 + "\nContact us at <b>support@infinadeck.com</b> for more assistance\n";
-                            _keybindsErrorInfo = "";
+                            _keybindsErrorInfo = null;
                         }
                         if (interpreter.errorInfo != _keybindsErrorInfo)
                         {
