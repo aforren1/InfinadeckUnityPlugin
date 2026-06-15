@@ -31,13 +31,13 @@ automatically.
 Package Manager ▸ **Add package from git URL…**:
 
 ```
-https://github.com/Infinadeck/InfinadeckUnityPlugin.git
+https://github.com/aforren1/infinadeckunityplugin.git#modernize-upm-unity6
 ```
 
 …or add to your project's `Packages/manifest.json`:
 
 ```json
-"com.infinadeck.unityplugin": "https://github.com/Infinadeck/InfinadeckUnityPlugin.git"
+"com.infinadeck.unityplugin": "https://github.com/aforren1/infinadeckunityplugin.git#modernize-upm-unity6"
 ```
 
 For local development, use **Add package from disk…** and select this folder's `package.json`.
