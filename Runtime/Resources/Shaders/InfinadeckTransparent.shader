@@ -86,7 +86,9 @@ Shader "Transparent/Cutout/TransparentInf"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
-            #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInput.hlsl"
+            #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
             TEXTURE2D(_CutTex);  SAMPLER(sampler_CutTex);
@@ -105,8 +107,8 @@ Shader "Transparent/Cutout/TransparentInf"
             {
                 Varyings OUT;
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
-                OUT.uvMain = TRANSFORM_TEX(IN.uv, _MainTex);
-                OUT.uvCut  = TRANSFORM_TEX(IN.uv, _CutTex);
+                OUT.uvMain = IN.uv * _MainTex_ST.xy + _MainTex_ST.zw;
+                OUT.uvCut  = IN.uv * _CutTex_ST.xy  + _CutTex_ST.zw;
                 return OUT;
             }
 

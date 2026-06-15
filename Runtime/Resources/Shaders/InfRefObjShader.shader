@@ -80,7 +80,9 @@ Shader "Unlit/InfRefObjShader"
         Tags { "RenderPipeline" = "HDRenderPipeline" "Queue" = "Geometry+1" }
 
         HLSLINCLUDE
-        #include "Packages/com.unity.render-pipelines.high-definition/Runtime/ShaderLibrary/ShaderVariables.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/UnityInput.hlsl"
+        #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/SpaceTransforms.hlsl"
 
         CBUFFER_START(UnityPerMaterial)
             float4 _Color1;
