@@ -27,7 +27,7 @@
     {
       "displayName": "Demo Scene",
       "description": "Example scene showing the [Infinadeck] prefab set up with reference objects and locomotion.",
-      "path": "Samples/DemoScene"
+      "path": "Samples~/DemoScene"
     }
   ]
 }

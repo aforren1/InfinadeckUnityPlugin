@@ -41,7 +41,6 @@ public class ReferenceObjects : MonoBehaviour
     public Data preferences;
     public Data gamePreferences;
     private bool geoUpdating;
-    private bool modelUpdating;
     public Interpreter interpreter;
 
     // Cached preference values — refreshed every 0.1 s by UpdateObjectModels so Update() is free of dict lookups and TryParse calls
@@ -83,7 +82,6 @@ public class ReferenceObjects : MonoBehaviour
     {
         StopAllCoroutines();
         geoUpdating = false;
-        modelUpdating = false;
     }
 
     /**
@@ -168,7 +166,6 @@ public class ReferenceObjects : MonoBehaviour
      */
     IEnumerator UpdateObjectModels()
     {
-        modelUpdating = true;
         while (true)
         {
             if (!preferences) { yield return new WaitForSeconds(0.05f); continue; }
