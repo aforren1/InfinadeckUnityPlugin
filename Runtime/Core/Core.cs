@@ -22,7 +22,7 @@ namespace Infinadeck
 {
 public class Core : MonoBehaviour
 {
-    readonly string pluginVersion = "4.0.0";
+    readonly string pluginVersion = "4.0.1";
     public string pluginVersionForEditorReference;
     [ReadOnlyInEditor] public GameObject refObjects;
     [ReadOnlyInEditor] public GameObject locomotion;

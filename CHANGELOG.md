@@ -3,7 +3,7 @@
 All notable changes to this package are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
-## [4.0.0]
+## [4.0.1]
 
 Major modernization release. **Breaking** — targets Unity 6.x, URP/HDRP, and the Input System.
 

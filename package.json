@@ -1,6 +1,6 @@
 {
   "name": "com.infinadeck.unityplugin",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "displayName": "Infinadeck Unity Plugin",
   "description": "Translates Infinadeck omnidirectional treadmill motion into 1:1 locomotion for PCVR projects. Includes locomotion, reference objects, splash screen and demo tooling. Targets Unity 6 with URP and the Input System.",
   "unity": "6000.0",
