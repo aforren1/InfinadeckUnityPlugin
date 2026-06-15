@@ -17,8 +17,7 @@ apps with the Infinadeck in mind. Lightweight but feature-full and simple to set
 ## Requirements
 
 - **Unity 6.x** (`6000.0`+)
-- A Scriptable Render Pipeline: **URP** or **HDRP** (the Built-in Render Pipeline is no longer
-  supported as of 4.0.0)
+- **Universal Render Pipeline (URP)** (the Built-in Render Pipeline and HDRP are not supported)
 - **Active Input Handling** set to *Input System Package* (or *Both*) in
   *Project Settings ▸ Player ▸ Other Settings*
 - Windows PCVR (the native `InfinadeckAPI.dll` is Windows x64)
@@ -44,11 +43,9 @@ For local development, use **Add package from disk…** and select this folder's
 
 ### After installing
 
-1. **Render pipeline materials.** The two reference-object shaders ship with URP and HDRP
-   variants. The remaining decorative/art materials use Unity's Standard/legacy shaders — run the
-   material converter once for your pipeline so they don't render magenta:
-   - URP: *Window ▸ Rendering ▸ Render Pipeline Converter*
-   - HDRP: *Edit ▸ Rendering ▸ Materials ▸ Convert All Built-in Materials to HDRP*
+1. **Render pipeline materials.** The decorative/art materials (treadmill model, logos) use
+   Unity's Standard/legacy shaders — run the material converter once so they don't render magenta:
+   *Window ▸ Rendering ▸ Render Pipeline Converter*
 2. **Demo Scene (optional).** In Package Manager, select this package ▸ **Samples** ▸ import
    *Demo Scene*.
 3. Drag the **`[Infinadeck]`** prefab (`Runtime/Prefabs`) into your scene and assign your
