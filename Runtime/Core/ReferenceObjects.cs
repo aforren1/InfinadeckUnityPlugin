@@ -171,7 +171,7 @@ public class ReferenceObjects : MonoBehaviour
             if (!preferences) { yield return new WaitForSeconds(0.05f); continue; }
             prefColorblind = preferences.ReadBool("colorblindMode");
             prefDynamicColorblind = preferences.ReadBool("dynamicColorblindElements");
-            prefColorblindFrames = preferences.ReadInt("dynamicColorblindFrames");
+            prefColorblindFrames = Mathf.Max(1, preferences.ReadInt("dynamicColorblindFrames")); // guard against /0 in Update's offset math
             prefDynamicRingPanel = preferences.ReadBool("dynamicRingPanel");
             prefMaxSpeed = preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond");
             prefBandThickness = preferences.ReadFloat("bandThicknessPercent");

@@ -5,13 +5,14 @@ All notable changes to this package are documented here. This project adheres to
 
 ## [4.0.1]
 
-Major modernization release. **Breaking** — targets Unity 6.x, URP/HDRP, and the Input System.
+Major modernization release. **Breaking** — targets Unity 6.x, URP, and the Input System.
 
 ### Added
 - Unity Package Manager (UPM) support: `package.json`, `Runtime`/`Editor` assembly definitions
   (`Infinadeck`, `Infinadeck.Editor`), and a Package Manager **Demo Scene** sample.
-- URP and HDRP variants of the two custom shaders (`Unlit/InfRefObjShader`,
-  `Transparent/Cutout/TransparentInf`) as multi-SubShader assets.
+- URP rewrites of the custom shaders (`Unlit/InfRefObjShader`,
+  `Transparent/Cutout/TransparentInf`, and a new `Infinadeck/InfDecor` unlit color shader for
+  demo-scene decor).
 
 ### Changed
 - **Namespaces & names:** every type now lives in the `Infinadeck` namespace, and the
@@ -29,9 +30,9 @@ Major modernization release. **Breaking** — targets Unity 6.x, URP/HDRP, and t
   `Infinadeck.ReadOnlyInEditorAttribute` (`[ReadOnlyInEditor]`).
 
 ### Requirements / migration notes
-- Unity **6000.0+** with **URP or HDRP** (the Built-in Render Pipeline is no longer targeted).
-  Run the pipeline material converter once after install to upgrade the remaining
-  Standard/legacy-shader art assets to your chosen pipeline.
+- Unity **6000.0+** with **URP** (the Built-in Render Pipeline and HDRP are not supported).
+  Run the URP material converter once after install to upgrade the remaining
+  Standard/legacy-shader art assets (treadmill model, logos).
 - Set **Player Settings ▸ Active Input Handling** to *Input System Package* (or *Both*); the
   package compiles against `ENABLE_INPUT_SYSTEM` and errors clearly if it is missing.
 - The package depends on `com.unity.inputsystem` and `com.unity.ugui`, pulled in automatically.
