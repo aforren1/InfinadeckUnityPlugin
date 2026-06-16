@@ -37,7 +37,7 @@ namespace Infinadeck
                 if (anchor) // only run if there is a successful connection
                 {
                     deviance = anchor.position - anchorPoint;
-                    mat.SetTextureOffset("_MainTex", new Vector2(-deviance.x / 1.2192f, -deviance.z / 1.2192f));
+                    mat.SetTextureOffset("_BaseMap", new Vector2(-deviance.x / 1.2192f, -deviance.z / 1.2192f));
                 }
                 else
                 {
@@ -52,7 +52,7 @@ namespace Infinadeck
                         yDistance += (float)interpreter.FloorSpeeds.v1 * (Time.deltaTime);
                     }
 
-                    mat.SetTextureOffset("_MainTex", new Vector2(-xDistance / speedToDeckSurface, -yDistance / speedToDeckSurface));
+                    mat.SetTextureOffset("_BaseMap", new Vector2(-xDistance / speedToDeckSurface, -yDistance / speedToDeckSurface));
                 }
             }
         }
