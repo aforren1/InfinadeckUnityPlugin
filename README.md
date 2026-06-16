@@ -43,12 +43,9 @@ For local development, use **Add package from disk…** and select this folder's
 
 ### After installing
 
-1. **Render pipeline materials.** The decorative/art materials (treadmill model, logos) use
-   Unity's Standard/legacy shaders — run the material converter once so they don't render magenta:
-   *Window ▸ Rendering ▸ Render Pipeline Converter*
-2. **Demo Scene (optional).** In Package Manager, select this package ▸ **Samples** ▸ import
+1. **Demo Scene (optional).** In Package Manager, select this package ▸ **Samples** ▸ import
    *Demo Scene*.
-3. Drag the **`[Infinadeck]`** prefab (`Runtime/Prefabs`) into your scene and assign your
+2. Drag the **`[Infinadeck]`** prefab (`Runtime/Prefabs`) into your scene and assign your
    Camera Rig and Headset references on the `Infinadeck.Core` component.
 
 ## Keybinds

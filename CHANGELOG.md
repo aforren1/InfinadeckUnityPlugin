@@ -31,8 +31,7 @@ Major modernization release. **Breaking** — targets Unity 6.x, URP, and the In
 
 ### Requirements / migration notes
 - Unity **6000.0+** with **URP** (the Built-in Render Pipeline and HDRP are not supported).
-  Run the URP material converter once after install to upgrade the remaining
-  Standard/legacy-shader art assets (treadmill model, logos).
+  All shipped materials render under URP out of the box.
 - Set **Player Settings ▸ Active Input Handling** to *Input System Package* (or *Both*); the
   package compiles against `ENABLE_INPUT_SYSTEM` and errors clearly if it is missing.
 - The package depends on `com.unity.inputsystem` and `com.unity.ugui`, pulled in automatically.
