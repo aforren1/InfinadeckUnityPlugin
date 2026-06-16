@@ -48,8 +48,15 @@ public class Core : MonoBehaviour
     private bool hideActive = false;
     public string guiOutput;
     private DateTime _keybindsSyncedAt;
-    private string _keybindsErrorInfo = "";
     private string _keybindsSectionStr = "";
+    // Cached GUI draw state. RebuildGui() recomputes guiOutput/_guiVisible/_guiTall only when one of
+    // the tracked inputs below changes, so OnGUI (every frame) never reallocates the notification string.
+    private bool _guiVisible;
+    private bool _guiTall;
+    private bool _gHaveState;
+    private bool _gHide, _gConnected, _gPlugin, _gKeybinds, _gInterpEnabled;
+    private string _gError;
+    private DateTime _gSync;
 
     public Data preferences;
     public Dictionary<string, Data.DataEntry> defaultPreferences;
@@ -627,10 +634,61 @@ public class Core : MonoBehaviour
     }
 
     /**
-     * Graphical elements for usage clarity.
+     * Graphical elements for usage clarity. The notification string is cached; RebuildGui() only
+     * runs when a tracked input changes, so this per-frame callback stays allocation-free.
      */
     void OnGUI()
     {
+        DateTime sync = (keybinds != null) ? keybinds.lastSync : default;
+        if (!_gHaveState
+            || hideActive != _gHide
+            || interpreter.Connected != _gConnected
+            || pluginActive != _gPlugin
+            || keybindsActive != _gKeybinds
+            || interpreter.enabled != _gInterpEnabled
+            || interpreter.errorInfo != _gError
+            || sync != _gSync)
+        {
+            _gHaveState = true;
+            _gHide = hideActive;
+            _gConnected = interpreter.Connected;
+            _gPlugin = pluginActive;
+            _gKeybinds = keybindsActive;
+            _gInterpEnabled = interpreter.enabled;
+            _gError = interpreter.errorInfo;
+            _gSync = sync;
+            RebuildGui();
+        }
+
+        if (!_guiVisible) { return; }
+
+        float bgY = _guiTall ? Screen.height - 700 : Screen.height - 500;
+        float h = _guiTall ? 1200 : 200;
+        GUI.DrawTexture(new Rect(Screen.width - 700, bgY, 400, h), textBG, ScaleMode.StretchToFill, false, 0);
+        GUI.Label(new Rect(Screen.width - 685, bgY + 15, 400, h), guiOutput);
+    }
+
+    /**
+     * Recompute guiOutput plus its visibility/layout flags from the current connection, plugin and
+     * keybind state. Called by OnGUI only when one of those inputs changed.
+     */
+    private void RebuildGui()
+    {
+        string err = interpreter.errorInfo;
+        const string safeMode = "SAFE MODE\n"
+            + "\n"
+            + "Prior project crashed or closed without\n"
+            + "calling OnApplicationQuit on Infinadeck.Core\n"
+            + "\n"
+            + "\n"
+            + "Press Ctrl + I to enable the Infinadeck Plugin\n"
+            + "\n"
+            + "\n"
+            + "Press = to Hide Infinadeck GUI Notifications\n";
+
+        _guiTall = false;
+        _guiVisible = true;
+
         if (!hideActive)
         {
             if (interpreter.Connected)
@@ -642,33 +700,27 @@ public class Core : MonoBehaviour
                         if (keybinds.lastSync != _keybindsSyncedAt)
                         {
                             _keybindsSyncedAt = keybinds.lastSync;
-                            string tread = "", refobj = "", demo = "";
+                            string tread = "", refobj = "", demoKeys = "";
                             foreach (KeyValuePair<string, Data.DataEntry> pref in keybinds.all)
                             {
                                 if (pref.Value.EntryName == "901- Treadmill") tread += pref.Value.EntryValue + " to " + pref.Key + "\n";
                                 else if (pref.Value.EntryName == "902- Reference Objects") refobj += pref.Value.EntryValue + " to " + pref.Key + "\n";
-                                else if (pref.Value.EntryName == "903- Demo") demo += pref.Value.EntryValue + " to " + pref.Key + "\n";
+                                else if (pref.Value.EntryName == "903- Demo") demoKeys += pref.Value.EntryValue + " to " + pref.Key + "\n";
                             }
                             _keybindsSectionStr = "Escape to QuitGame, Ctrl+I to TogglePlugin, = to HideGUI\n"
                                 + "\n[Treadmill]\n" + tread
                                 + "\n[Reference Objects]\n" + refobj
-                                + "\n[Demo]\n" + demo
+                                + "\n[Demo]\n" + demoKeys
                                 + "\n\nAll keybinds listed in\n"
                                 + "My Documents/My Games/Infinadeck/Config/keybinds.ini\n"
                                 + "\nContact us at <b>support@infinadeck.com</b> for more assistance\n";
-                            _keybindsErrorInfo = null;
                         }
-                        if (interpreter.errorInfo != _keybindsErrorInfo)
-                        {
-                            _keybindsErrorInfo = interpreter.errorInfo;
-                            guiOutput = "<b>INFINADECK</b>   <color=red>" + _keybindsErrorInfo + "</color>\n" + _keybindsSectionStr;
-                        }
-                        GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 700, 400, 1200), textBG, ScaleMode.StretchToFill, false, 0);
-                        GUI.Label(new Rect(Screen.width - 685, Screen.height - 685, 400, 1200), guiOutput);
+                        guiOutput = "<b>INFINADECK</b>   <color=red>" + err + "</color>\n" + _keybindsSectionStr;
+                        _guiTall = true;
                     }
                     else
                     {
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
+                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + err + "</color>\n"
                             + "No keybinds active\n"
                             + "\n"
                             + "Enable them by setting 'keyboardInputEnabled = true in'\n"
@@ -679,13 +731,11 @@ public class Core : MonoBehaviour
                             + "Contact us at <b>support@infinadeck.com</b> for more assistance\n"
                             + "\n"
                             + "Press = to Hide Infinadeck GUI Notifications\n";
-                        GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 500, 400, 200), textBG, ScaleMode.StretchToFill, false, 0);
-                        GUI.Label(new Rect(Screen.width - 685, Screen.height - 485, 400, 200), guiOutput);
                     }
                 }
-                else// IDA present, Plugin is Disabled
+                else // IDA present, Plugin is Disabled
                 {
-                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
+                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + err + "</color>\n"
                         + "Infinadeck Plugin disabled, but IDA is open\n"
                         + "\n"
                         + "Re-enable by pressing Ctrl+I\n"
@@ -696,15 +746,13 @@ public class Core : MonoBehaviour
                         + "Contact us at <b>support@infinadeck.com</b> for more assistance\n"
                         + "\n"
                         + "Press = to Hide Infinadeck GUI Notifications\n";
-                    GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 500, 400, 200), textBG, ScaleMode.StretchToFill, false, 0);
-                    GUI.Label(new Rect(Screen.width - 685, Screen.height - 485, 400, 200), guiOutput);
                 }
             }
-            else
+            else // IDA not present
             {
                 if (pluginActive) // IDA not present, Plugin is Enabled
                 {
-                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
+                    guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + err + "</color>\n"
                         + "Infinadeck Plugin enabled, but IDA is not open\n"
                         + "\n"
                         + "Download IDA (Infinadeck Desktop Application)\n"
@@ -715,50 +763,18 @@ public class Core : MonoBehaviour
                         + "Contact us at <b>support@infinadeck.com</b> for more assistance\n"
                         + "\n"
                         + "Press = to Hide Infinadeck GUI Notifications\n";
-                    GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 500, 400, 200), textBG, ScaleMode.StretchToFill, false, 0);
-                    GUI.Label(new Rect(Screen.width - 685, Screen.height - 485, 400, 200), guiOutput);
                 }
                 else // IDA not present, Plugin is Disabled
                 {
-                    if (interpreter.enabled) { guiOutput = ""; }
-                    else //Safe Mode Message
-                    {
-                        guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
-                        + "SAFE MODE\n"
-                        + "\n"
-                        + "Prior project crashed or closed without\n"
-                        + "calling OnApplicationQuit on InfinadeckCore\n"
-                        + "\n"
-                        + "\n"
-                        + "Press Ctrl + I to enable the Infinadeck Plugin\n"
-                        + "\n"
-                        + "\n"
-                        + "Press = to Hide Infinadeck GUI Notifications\n";
-                        GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 500, 400, 200), textBG, ScaleMode.StretchToFill, false, 0);
-                        GUI.Label(new Rect(Screen.width - 685, Screen.height - 485, 400, 200), guiOutput);
-                    }
+                    if (interpreter.enabled) { guiOutput = ""; _guiVisible = false; }
+                    else { guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + err + "</color>\n" + safeMode; }
                 }
             }
         }
-        else
+        else // notifications hidden — only the safe-mode warning still shows
         {
-            if (interpreter.enabled) { guiOutput = ""; }
-            else //Safe Mode Message even though messages hidden
-            {
-                guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + interpreter.errorInfo + "</color>\n"
-                + "SAFE MODE\n"
-                + "\n"
-                + "Prior project crashed or closed without\n"
-                + "calling OnApplicationQuit on Infinadeck.Core\n"
-                + "\n"
-                + "\n"
-                + "Press Ctrl + I to enable the Infinadeck Plugin\n"
-                + "\n"
-                + "\n"
-                + "Press = to Hide Infinadeck GUI Notifications\n";
-                GUI.DrawTexture(new Rect(Screen.width - 700, Screen.height - 500, 400, 200), textBG, ScaleMode.StretchToFill, false, 0);
-                GUI.Label(new Rect(Screen.width - 685, Screen.height - 485, 400, 200), guiOutput);
-            }
+            if (interpreter.enabled) { guiOutput = ""; _guiVisible = false; }
+            else { guiOutput = "<b>INFINADECK</b>" + "   <color=red>" + err + "</color>\n" + safeMode; }
         }
     }
 }

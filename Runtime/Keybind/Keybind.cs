@@ -181,12 +181,10 @@ namespace Infinadeck
         public bool KeyRequest(Key theKey)
         {
             bool output = false;
-            if (checkYourKeys)
+            if (checkYourKeys && CheckKeyBuffer(theKey))
             {
-                for (int b = 0; b < 12; b++)
-                {
-                    if (CheckKeyBuffer(theKey)) { output = true; RemoveKeyFromBuffer(theKey); }
-                }
+                output = true;
+                RemoveKeyFromBuffer(theKey);
             }
             if (CheckKeyBufferEmpty()) { checkYourKeys = false; }
             return output;

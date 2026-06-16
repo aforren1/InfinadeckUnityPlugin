@@ -272,37 +272,7 @@ public class ReferenceObjects : MonoBehaviour
             if ((preferences.ReadFloat("bandThicknessPercent") != 0) && (preferences.ReadFloat("maxTreadmillSpeedMetersPerSecond") != 0)) { referencePanelBand.gameObject.SetActive(true); }
             else { referencePanelBand.gameObject.SetActive(false); }
 
-            if (preferences.ReadInt("panelPalette") == 0) // [0] black-BG grey-boundary white-band
-            {
-                referencePanelBackdrop.gameObject.SetActive(true);
-                referencePanelBackdropMat.SetColor("_Color2", Color.black);
-                referencePanelBoundaryMat.SetColor("_Color2", Color.grey);
-                referencePanelBandMat.SetColor("_Color2", Color.white);
-            }
-            else if (preferences.ReadInt("panelPalette") == 1) // [1] grey-BG white-boundary synced-band
-            {
-                referencePanelBackdrop.gameObject.SetActive(true);
-                referencePanelBackdropMat.SetColor("_Color2", Color.grey);
-                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-            }
-            else if (preferences.ReadInt("panelPalette") == 2) // [2] synced-BG white-boundary white-band
-            {
-                referencePanelBackdrop.gameObject.SetActive(true);
-                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                referencePanelBandMat.SetColor("_Color2", Color.white);
-
-            }
-            else if (preferences.ReadInt("panelPalette") == 3) // [3] no-BG white-boundary synced-band
-            {
-                referencePanelBackdrop.gameObject.SetActive(false);
-                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-            }
-            else if (preferences.ReadInt("panelPalette") == 4) // [4] no-BG white-boundary white-band
-            {
-                referencePanelBackdrop.gameObject.SetActive(false);
-                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-                referencePanelBandMat.SetColor("_Color2", Color.white);
-            }
+            ApplyPanelPalette(preferences.ReadInt("panelPalette"));
 
             if (preferences.ReadBool("colorblindMode"))
             {
@@ -438,39 +408,43 @@ public class ReferenceObjects : MonoBehaviour
     public void CyclePanelTheme()
     {
         preferences.Write("panelPalette", ((preferences.ReadInt("panelPalette") + 1) % 5).ToString());
+        ApplyPanelPalette(preferences.ReadInt("panelPalette"));
+    }
 
-        if (preferences.ReadInt("panelPalette") == 0) // [0] black-BG grey-boundary white-band
+    /**
+     * Apply the colors and backdrop visibility for a given panel palette (0-4) to the
+     * reference-panel materials. Shared by the periodic geometry update and the manual cycle.
+     */
+    private void ApplyPanelPalette(int palette)
+    {
+        switch (palette)
         {
-            referencePanelBackdrop.gameObject.SetActive(true);
-            referencePanelBackdropMat.SetColor("_Color2", Color.black);
-            referencePanelBoundaryMat.SetColor("_Color2", Color.grey);
-            referencePanelBandMat.SetColor("_Color2", Color.white);
+            case 0: // black-BG grey-boundary white-band
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBackdropMat.SetColor("_Color2", Color.black);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.grey);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
+                break;
+            case 1: // grey-BG white-boundary synced-band
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBackdropMat.SetColor("_Color2", Color.grey);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                break;
+            case 2: // synced-BG white-boundary white-band
+                referencePanelBackdrop.gameObject.SetActive(true);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
+                break;
+            case 3: // no-BG white-boundary synced-band
+                referencePanelBackdrop.gameObject.SetActive(false);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                break;
+            case 4: // no-BG white-boundary white-band
+                referencePanelBackdrop.gameObject.SetActive(false);
+                referencePanelBoundaryMat.SetColor("_Color2", Color.white);
+                referencePanelBandMat.SetColor("_Color2", Color.white);
+                break;
         }
-        else if (preferences.ReadInt("panelPalette") == 1) // [1] grey-BG white-boundary synced-band
-        {
-            referencePanelBackdrop.gameObject.SetActive(true);
-            referencePanelBackdropMat.SetColor("_Color2", Color.grey);
-            referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-        }
-        else if (preferences.ReadInt("panelPalette") == 2) // [2] synced-BG white-boundary white-band
-        {
-            referencePanelBackdrop.gameObject.SetActive(true);
-            referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-            referencePanelBandMat.SetColor("_Color2", Color.white);
-
-        }
-        else if (preferences.ReadInt("panelPalette") == 3) // [3] no-BG white-boundary synced-band
-        {
-            referencePanelBackdrop.gameObject.SetActive(false);
-            referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-        }
-        else if (preferences.ReadInt("panelPalette") == 4) // [4] no-BG white-boundary white-band
-        {
-            referencePanelBackdrop.gameObject.SetActive(false);
-            referencePanelBoundaryMat.SetColor("_Color2", Color.white);
-            referencePanelBandMat.SetColor("_Color2", Color.white);
-        }
-
     }
 
     /**
