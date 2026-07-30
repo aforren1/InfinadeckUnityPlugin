@@ -16,6 +16,13 @@ All notable changes to this package are documented here. This project adheres to
   Demo) and XR Hands (HandVisualizer sample). Targets Windows PCVR; tested with a Galaxy XR
   as the PCVR headset.
 
+### Fixed
+- The custom URP shaders (`Unlit/InfRefObjShader`, `Transparent/Cutout/TransparentInf`,
+  `Infinadeck/InfDecor`) lacked GPU-instancing and stereo eye-index support, so every
+  reference object (ring, edge, center, heading, panel) rendered in only one eye under
+  Single Pass Instanced XR rendering. All three shaders now declare
+  `multi_compile_instancing` and the stereo vertex macros.
+
 ## [4.0.1]
 
 Major modernization release. **Breaking** — targets Unity 6.x, URP, and the Input System.

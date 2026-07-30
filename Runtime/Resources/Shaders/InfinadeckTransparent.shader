@@ -28,6 +28,7 @@ Shader "Transparent/Cutout/TransparentInf"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
             TEXTURE2D(_MainTex); SAMPLER(sampler_MainTex);
@@ -40,12 +41,27 @@ Shader "Transparent/Cutout/TransparentInf"
                 float _Cutoff;
             CBUFFER_END
 
-            struct Attributes { float4 positionOS : POSITION; float2 uv : TEXCOORD0; };
-            struct Varyings   { float4 positionHCS : SV_POSITION; float2 uvMain : TEXCOORD0; float2 uvCut : TEXCOORD1; };
+            // Stereo rendering (Single Pass Instanced) needs the instance/eye-index
+            // macros, or the object only draws in one eye.
+            struct Attributes
+            {
+                float4 positionOS : POSITION;
+                float2 uv : TEXCOORD0;
+                UNITY_VERTEX_INPUT_INSTANCE_ID
+            };
+            struct Varyings
+            {
+                float4 positionHCS : SV_POSITION;
+                float2 uvMain : TEXCOORD0;
+                float2 uvCut : TEXCOORD1;
+                UNITY_VERTEX_OUTPUT_STEREO
+            };
 
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
+                UNITY_SETUP_INSTANCE_ID(IN);
+                UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
                 OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
                 OUT.uvMain = TRANSFORM_TEX(IN.uv, _MainTex);
                 OUT.uvCut  = TRANSFORM_TEX(IN.uv, _CutTex);
