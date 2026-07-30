@@ -29,6 +29,11 @@
       "displayName": "Demo Scene",
       "description": "Example scene showing the [Infinadeck] prefab set up with reference objects and locomotion.",
       "path": "Samples~/DemoScene"
+    },
+    {
+      "displayName": "XR Playground",
+      "description": "PCVR test scene built on the XR Interaction Toolkit reference rig: controllers, hand tracking, body collision, coins to collect by hand with a scoreboard, and the [Infinadeck] prefab wired to the rig for treadmill locomotion. Requires XRI (Starter Assets + Hands Interaction Demo samples) and XR Hands (HandVisualizer sample); tested with a Galaxy XR as the PCVR headset.",
+      "path": "Samples~/XRPlayground"
     }
   ]
 }

@@ -3,6 +3,19 @@
 All notable changes to this package are documented here. This project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **XR Playground** sample: OpenXR test scene built on the XR Interaction Toolkit reference rig
+  (`XR Origin Hands (XR Rig)` from the Hands Interaction Demo sample), giving controller models,
+  hand and finger meshes, and XRI locomotion out of the box. The sample adds a body-collision
+  script so the player cannot physically walk or lean through obstacles, and coins to collect
+  by touching them with a palm or controller, with a floating scoreboard. The `[Infinadeck]`
+  prefab is included and wired to the XR Origin at runtime, so the treadmill drives locomotion
+  alongside XRI's thumbstick movement. Requires XRI 3.x (Starter Assets + Hands Interaction
+  Demo) and XR Hands (HandVisualizer sample). Targets Windows PCVR; tested with a Galaxy XR
+  as the PCVR headset.
+
 ## [4.0.1]
 
 Major modernization release. **Breaking** — targets Unity 6.x, URP, and the Input System.

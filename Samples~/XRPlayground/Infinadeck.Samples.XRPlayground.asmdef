@@ -1,0 +1,25 @@
+{
+    "name": "Infinadeck.Samples.XRPlayground",
+    "rootNamespace": "Infinadeck.Samples.XRPlayground",
+    "references": [
+        "Infinadeck",
+        "Unity.InputSystem",
+        "Unity.XR.CoreUtils",
+        "Unity.XR.Hands"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.xr.hands",
+            "expression": "1.1.0",
+            "define": "XR_HANDS_PRESENT"
+        }
+    ],
+    "noEngineReferences": false
+}

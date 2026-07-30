@@ -43,8 +43,10 @@ For local development, use **Add package from disk…** and select this folder's
 
 ### After installing
 
-1. **Demo Scene (optional).** In Package Manager, select this package ▸ **Samples** ▸ import
-   *Demo Scene*.
+1. **Samples (optional).** In Package Manager, select this package ▸ **Samples** ▸ import
+   *Demo Scene* (legacy treadmill demo) or *XR Playground* (headset/controller/hand tracking test scene
+   with body collision and coin collecting, built on the XR Interaction Toolkit reference rig;
+   see the sample's README for the required XRI and XR Hands sample imports).
 2. Drag the **`[Infinadeck]`** prefab (`Runtime/Prefabs`) into your scene and assign your
    Camera Rig and Headset references on the `Infinadeck.Core` component.
 
