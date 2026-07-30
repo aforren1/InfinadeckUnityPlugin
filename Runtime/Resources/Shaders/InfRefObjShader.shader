@@ -18,12 +18,24 @@ Shader "Unlit/InfRefObjShader"
         float4 _Color2;
     CBUFFER_END
 
-    struct Attributes { float4 positionOS : POSITION; };
-    struct Varyings   { float4 positionHCS : SV_POSITION; };
+    // Stereo rendering (Single Pass Instanced) needs the instance/eye-index
+    // macros, or the object only draws in one eye.
+    struct Attributes
+    {
+        float4 positionOS : POSITION;
+        UNITY_VERTEX_INPUT_INSTANCE_ID
+    };
+    struct Varyings
+    {
+        float4 positionHCS : SV_POSITION;
+        UNITY_VERTEX_OUTPUT_STEREO
+    };
 
     Varyings vert(Attributes IN)
     {
         Varyings OUT;
+        UNITY_SETUP_INSTANCE_ID(IN);
+        UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(OUT);
         OUT.positionHCS = TransformObjectToHClip(IN.positionOS.xyz);
         return OUT;
     }
@@ -45,6 +57,7 @@ Shader "Unlit/InfRefObjShader"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
             half4 frag(Varyings IN) : SV_Target { return _Color1; }
             ENDHLSL
         }
@@ -60,6 +73,7 @@ Shader "Unlit/InfRefObjShader"
             HLSLPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_instancing
             half4 frag(Varyings IN) : SV_Target { return _Color2; }
             ENDHLSL
         }
